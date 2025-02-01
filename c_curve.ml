@@ -18,9 +18,9 @@ let rec cn x y len alpha n =
       cn (x +. len /. (sqrt 2.) *. cos (alpha +. pi /. 4.)) (y +. len /. (sqrt 2.) *. sin (alpha +. pi /. 4.)) (len /. sqrt 2.) (alpha -. pi /. 4. ) (n-1)
     end;;
 
-cn 600. 190. 300. (pi /. 2.) 15;;
-(* for i = 0 to 20 do 
+(* cn 600. 190. 300. (pi /. 2.) 15;; *)
+for i = 0 to 20 do 
   cn 600. 190. 300. (pi /. 2.) i;
   if i <> 20 then   clear_graph ();
   Printf.printf "\nDONE %i\n" i
-done;; *)
+done;;
