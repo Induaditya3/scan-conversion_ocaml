@@ -8,15 +8,24 @@ This is a doc of my implementation of it in [OCaml](./fill_scan-line.ml). This i
 
 Side parallel to $x$ - axis should be handled carefully because inverse of slope, $\frac{1}{m} = \frac{\Delta x}{\Delta y}$ will yield nan as $\Delta y =0 $. But they can drawn simply when scan-line is overlapping it.
 
-Since difference between two consecutive scan-line $$\Delta y = y_{c} - y_{p} = 1 $$
+Since difference between two consecutive scan-line 
+
+$$\Delta y = y_{c} - y_{p} = 1 $$
+
 Next point of intersection with scan-line with side of polygon can be found 
+
 $$\Rightarrow x_c = x_p + (x_c - x_p) = x_p + \Delta x = x_p + \frac{1}{m} $$ 
 
 where 
+
 $$ y_c \rightarrow current \, scanline $$
+
 $$ y_p \rightarrow previous \, scanline $$
+
 $$ x_c \rightarrow current \, point \, of \, intersection  \, scanline \, with \, side $$
+
 $$ x_p \rightarrow previous \, point \, of \, intersection  \, scanline \, with \, side $$
+
 
 ![Filled triangle](/figures/fill_fig.png)
 
