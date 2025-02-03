@@ -130,3 +130,82 @@ let fill arr =
     process_active edges (float scanline);
   done
 ```
+
+## koch curve
+
+![Koch curve of various order](.\figures\merged-koch.png)
+
+Like [C-curve](./c_curve.pdf), a straight line is also a Koch curve of order 0. For constructing Koch curve of order one more than current one, current is modified as follows:
+
+1. Line is trisected and middle part is removed.
+2. Two new line segments are drawn such they make equilateral triangle with removed segment.
+
+Parameters given for constructing Koch curve
+
+1. coordinate of inital point $A(x_1, y_1)$
+2. length of initial line $len$ $(= AE)$
+3. angle α made by initial line $AE$ with $x-axis$
+4. order n of the Koch curve
+
+### preliminaries
+
+![Koch curve](/figures/koch1.png)
+
+For constructing Koch curve, we need more than what we are given, such as coordinates of $B$, $C$, $D$ and $E$ . So need figure those out.
+
+First we find angle made by $BC$ with $x- axis$, i.e, $\beta$.
+
+We know all angles of equilateral triangle is $\frac{\pi}{3}$. And angle made by BD with $x-axis$ is $\alpha$. So
+
+$$\frac{\pi}{3} + \beta = \alpha$$
+> $$\beta = \alpha - \frac{\pi}{3}$$
+
+For finding angle made by $CD$ with $x-axis$ ,i.e., $\gamma$ .
+We have 
+
+$$ \left(\frac{\pi}{3} - \beta\right) + \gamma = \pi$$
+
+> $$\gamma = \alpha + \frac{\pi}{3}$$
+
+Finally angle made by $DE$ is clearly $\alpha$.
+
+Now, we express coordinate of $B(x_2, x_2)$ in terms of given parameters.
+
+We know 
+$$ \cos \alpha = \frac{x_2-x_1}{len/3}$$
+
+> $$x_2 = x_1 + \frac{len}{3} \cos \alpha$$
+
+Similarly,
+$$\sin \alpha = \frac{y_2-y_1}{len/3}$$
+
+> $$y_2 = y_1 + \frac{len}{3} \sin \alpha$$
+
+Other results like this can be similarly derived. We just list other needed results.
+
+1. $C(x_3,y_3) \equiv \left(x_2+ \frac{len}{3} \cos \left( \alpha + \frac{\pi}{3}\right), y_2+ \frac{len}{3} \sin \left( \alpha + \frac{\pi}{3}\right) \right)$
+2. $D(x_4,y_4) \equiv \left(x_3+ \frac{len}{3} \cos \left( \alpha - \frac{\pi}{3}\right), y_3+ \frac{len}{3} \sin \left( \alpha - \frac{\pi}{3}\right) \right)$
+3. $E(x_5,y_5) \equiv \left(x_4+ \frac{len}{3} \cos  \alpha , y_4+ \frac{len}{3} \sin \alpha  \right)$
+4. $E(x_5,y_5) \equiv \left(x_1+ len \cos  \alpha , y_1+ len \sin \alpha  \right)$
+
+For finding one coordinate in terms of the other we can use following function.
+
+```OCaml
+let transformxy x y len alpha =
+  x +. len *. cos alpha, y +. len *. sin alpha
+```
+
+### algorithm
+
+Koch-curve ($x \, y \, len \,\alpha \, n$)
+
+1. if $n= 0$ then
+    - Draw stright line from A to E
+
+2. if $n>0$ then
+    - Koch-curve from A to B reducing order n by 1
+    - Koch-curve from B to C reducing order n by 1
+    - Koch-curve from C to D reducing order n by 1
+    - Koch-curve from D to E reducing order n by 1
+
+Look at the implementaion [here](./koch_curve.ml) .

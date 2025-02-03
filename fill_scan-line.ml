@@ -80,7 +80,7 @@ l;;
 
 let fill arr =
   let edges = edge_arr arr in 
-  for scanline = 0 to 768 do 
+  for scanline = 0 to size_y ()-1 do 
     activate_edges edges (float scanline);
     deactivate_edges edges (float scanline);
     process_active edges (float scanline);
