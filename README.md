@@ -133,7 +133,7 @@ let fill arr =
 
 ## koch curve
 
-![Koch curve of various order](.\figures\merged-koch.png)
+![Koch curve of various order](./figures/merged-koch.png)
 
 Like [C-curve](./c_curve.pdf), a straight line is also a Koch curve of order 0. For constructing Koch curve of order one more than current one, current is modified as follows:
 
