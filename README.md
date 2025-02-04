@@ -209,3 +209,33 @@ Koch-curve ($x \, y \, len \,\alpha \, n$)
     - Koch-curve from D to E reducing order n by 1
 
 Look at the implementaion [here](./koch_curve.ml) .
+
+
+## sierpinski gasket
+
+It is recursively defined region. To draw it, we need to know coordinates of inital triangle and order of it. 
+
+![Gasket of Various order](/figures/merged-gasket.png)
+
+Only prerequisite is to know that coordinate of a mid point of a line segment (in our case sides of the triangle) is average of coodinates of end points defining the line segment.
+
+For example if $AB$ is a line segment and $M$ is its mid point, where $A \equiv (x_1, y_1)$ and $B \equiv (x_2, y_2)$ .
+
+Then, $M \equiv \left(\frac{x_1 + x_2}{2}, \frac{y_1 + y_2}{2}\right)$
+
+### algorithm
+
+![Gasket](/figures/gasket.png)
+
+Sierpinski-gasket ($x_1,y_1,x_2,y_2,x_3,y_3, n$)
+
+1. if $n=0$ then 
+
+      - Draw a filled traingle defined by points $A$, $B$ and $C$.
+2. if $n > 0$ then 
+      - Draw Sierpinski-gasket defined by $A$ , $D$ ,and $F$ reducing order by 1.
+      - Draw Sierpinski-gasket defined by $D$ , $B$ ,and $E$ reducing order by 1.
+      - Draw Sierpinski-gasket defined by $F$ , $E$ ,and $C$ reducing order by 1.
+
+
+[Implementaion](sierpinski_gasket.ml)
