@@ -46,7 +46,7 @@ let sphere_color s =
   | None -> rgb 255 255 255;; (*Background color is white*)
 
 let plotc x' y' color =
-  let x,y = x' + (size_x () / 2), y' + (size_y () / 2) in 
+  let x,y =  x' + (size_x ()) / 2, y' + (size_y ()) / 2 in 
   set_color ( color);
   plot x y;;
 
@@ -55,17 +55,17 @@ let plotc x' y' color =
 let g_to_viewport gx gy =
   let vwidth = 1. in 
   let vheight = 1. in
-  let vx = float gx *. vwidth  /. float (size_x ()) in 
-  let vy = float gy *. vheight  /. float (size_y ()) in 
-  let d = 1. in 
+  let vx = (float gx *. vwidth)  /. float (size_x ()) in 
+  let vy = (float gy *. vheight)  /. float (size_y ()) in 
+  let d = 0.38 in 
   {x = vx;y = vy; z = d};;
 
 let intersect_sphere o v s =
   let d = sub3 v o in 
-  let co = sub3 s.c o in 
+  let co = sub3 o s.c in 
   let a = sproduct d d in 
   let b = 2. *. sproduct d co in 
-  let c = sproduct co co -. s.r *. s.r in 
+  let c = sproduct co co -. (s.r *. s.r) in 
   quad a b c;;
 
 (* closest_sphere initially be   ref None *)
@@ -74,12 +74,12 @@ let rec rtx o v tmin tmax sl closest_sphere closest_t =
   match sl with
   s1::sr -> 
     let t1, t2 = intersect_sphere o v s1 in 
-    if (t1 <= Some tmin && t1 <= Some tmax) && t1 <= !closest_t then
+    if (t1 >= Some tmin && t1 <= Some tmax) && t1 <= !closest_t then
       begin
       closest_t := t1;
       closest_sphere := Some s1
       end;
-    if (t2 <= Some tmin && t2 <= Some tmax) && t2 <= !closest_t then 
+    if (t2 >= Some tmin && t2 <= Some tmax) && t2 <= !closest_t then 
       begin
       closest_t := t2; 
       closest_sphere := Some s1
