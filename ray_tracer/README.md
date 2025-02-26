@@ -128,7 +128,11 @@ $$ \langle P - C, P - C  \rangle = r^2 $$
 
 So we can substitute value of $P$ in equation of sphere we get
 
-(Before we get into calculation, we need remmember that, for vectors defined over real numbers, $ \langle \vec{a}, \vec{b} \rangle = \langle \vec{b}, \vec{a} \rangle $ . In general case, one would be complex conjugate of the other. )
+(Before we get into calculation, we need remmember that, for vectors defined over real numbers, 
+
+$$ \langle \vec{a}, \vec{b} \rangle = \langle \vec{b}, \vec{a} \rangle $$ 
+
+In general case, one would be complex conjugate of the other. )
 
 $$ \langle O + t \vec{D} - C , O + t \vec{D} - C \rangle = r^2 $$
 
