@@ -214,7 +214,7 @@ Consider a point $P$ in the scene. $\vec{N}$ is a normal vector from $P$. $\vec{
 
 $\frac{l}{x}$ represent drop in the intensity after reflection of light. For example, if light is perpendicular to point $P$ of the surface, $\frac{l}{x} = 1$ . 
 
-![intensity after reflection](/figs/intensity.png)
+![intensity after reflection](./figs/intensity.png)
 
 Consider $\triangle PQR$ which is a right angled triangle.
 
@@ -228,11 +228,11 @@ $$\cos \beta = \frac{l/2}{x/2} = \frac{l}{x}$$
 
 We know that
 
-$$\langle \vec{L}, \vec{N}\rangle = ||\vec{L}|| \,\,||\vec{N}|| \cos \beta$$
+$$\langle \vec{L}, \vec{N}\rangle = ||\vec{L}||   ||\vec{N}|| \cos \beta$$
 
 So,
 
-$$\cos \beta = \frac{\langle \vec{L}, \vec{N}\rangle}{||\vec{L}|| \,\,||\vec{N}||}$$
+$$\cos \beta = \frac{\langle \vec{L}, \vec{N}\rangle}{||\vec{L}||   ||\vec{N}||}$$
 
 If $\beta > 90 \degree$ then point is illuminated from back side of surface. In that case, we treat it as zero.
 
@@ -246,7 +246,7 @@ We simply add all the light's intensity which hits the point and finally multipl
 
 Mathematically,
 
-$$I_{total} = I_a + \sum I_i \frac{\langle \vec{L_i}, \vec{N}\rangle}{||\vec{L}_i|| \,\,||\vec{N}||}$$
+$$I_{total} = I_a + \sum I_i \frac{\langle \vec{L_i}, \vec{N}\rangle}{||\vec{L}_i||   ||\vec{N}||}$$
 
 where 
 
