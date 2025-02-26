@@ -15,7 +15,7 @@ It translates origin to middle of the graphics window.
 ## colors
 
 We use additive color model (RGB model), obviously.
-With each color channel represented by 8 bit positive integer. So, range is [0,255]. We can treat triplet of RGB values as a vector. Then, adding two colors together we get new color. And mutiplying a color by scalar just increases brightness , i.e.
+With each color channel represented by 8 bit positive integer. So, range is [0,255]. We can treat triplet of RGB values as a vector. Then, adding two colors together we get new color. And multiplying a color by scalar just increases brightness , i.e.
 
 $$k (r, g, b) = (kr, kg, kb) $$
 
@@ -156,18 +156,118 @@ $$ t_{1,2} = \frac{-b \pm \sqrt{b^2-4ac}}{2a} $$
 
 After finding value of $t$ we can substitute in equation of ray to find point $P$. We should be careful to take  closest point $P$ (the one which is visible to camera) and for which $t > 1$ (objects are in front of viewport).
 
+## lighting
+
+We use white light and assume that light has same intensity irrespective of distance from the source.
+
+### point lights
+
+They can completely be described by 
+
+- coordinate $Q$ of their location 
+- intensity of light
+
+Any vector from arbitrary point $P$ to light source $Q$ will be denoted by $\vec{L}$ .
+
+### directional lights
+
+They are used for representing light sources that are situated very far away compared to distances between objects in the scene. So, rays of light coming from these sources are essentially parallel with each other. So, $\vec{L}$ is same for every point $P$ in the scene.
+
+To model these lights we need
+
+- direction vector $\vec{L}$
+- intensity of light
+
+### ambient light
+
+In real life, an object that does not get direct light is not completely dark because reflected light illuminates it. In order to avoid treating every object as a light source, we will use ambient light which basically illuminates every object in the scene.
+
+To model it we need
+
+- intensity of light 
+
+### lighting a point
+```OCaml
+(* type for light *)
+(* kind of light is represented by k field - *)
+(* p - for point source *)
+(* d - for directional light *)
+(* a - for ambient source *)
+type light = 
+  {
+    k : char;
+    i : float;
+    v : point option
+  }
+```
+v stores
+
+- location of point, in case of point source
+- direction vector, in case of directional light
+- `None` , in case of ambient source
+
+Some of all intensities of light should equal to 1. Because if it didn't then some of points in scene will overexposed.
+
+Now calculate how much a point should illuminated by a point source and directional source.
+
+Consider a point $P$ in the scene. $\vec{N}$ is a normal vector from $P$. $\vec{L}$ is directional vector. In case of directional light, we are already given. But in case, point light source we need to compute it from position of light source and coordinate of point $P$. $l $ denote  width of the light (proportional to intensity) and $x$ denotes length over which light spreads. $RS$ is perpendicular to $\vec{L}$ and $Q$ is point of intersection.
+
+$\frac{l}{x}$ represent drop in the intensity after reflection of light. For example, if light is perpendicular to point $P$ of the surface, $\frac{l}{x} = 1$ . 
+
+![intensity after reflection](/figs/intensity.png)
+
+Consider $\triangle PQR$ which is a right angled triangle.
+
+It is easy to see that 
+
+$$\angle PRQ = \beta $$
+
+Now,
+
+$$\cos \beta = \frac{l/2}{x/2} = \frac{l}{x}$$
+
+We know that
+
+$$\langle \vec{L}, \vec{N}\rangle = ||\vec{L}|| \,\,||\vec{N}|| \cos \beta$$
+
+So,
+
+$$\cos \beta = \frac{\langle \vec{L}, \vec{N}\rangle}{||\vec{L}|| \,\,||\vec{N}||}$$
+
+If $\beta > 90 \degree$ then point is illuminated from back side of surface. In that case, we treat it as zero.
+
+We will multiply intensity of light by this factor $\cos \beta$ to get intensity after reflection.
+
+
+
+A single point in a scene is illuminated by many sources which may be of different kind.
+
+We simply add all the light's intensity which hits the point and finally multiply total intensity by color of the point. It basically increases or decreases the brightness.
+
+Mathematically,
+
+$$I_{total} = I_a + \sum I_i \frac{\langle \vec{L_i}, \vec{N}\rangle}{||\vec{L}_i|| \,\,||\vec{N}||}$$
+
+where 
+
+- $I_{total}$ is the total intensity
+- $I_a$ is the intensity of ambient source
+- $I_i$ is intensity of $i$ th light source which can be point source or directional light
+- $L_i$ is directional vector of light
+
+
 ## rendering
 
 We iterate over every pixels of graphics window and find corresponding point on the viewport and shoot out a ray from camera through that point on viewport. If that ray intersect an object in the scene then we calculate the color and then set that pixel to that color.
 
-```Ocaml
+```OCaml
 let o = (0,0,0);; (* the origin O*)
 let gw, gh = size_x (), size_y ();; (*max width and height of graphics window *)
 for x = -gw/2 to gw/2 do 
     for y = -gh/2 to gh/2 do 
         let v = g_to_viewport x y in
-        let c = rtx o v 1 infty in 
-        plotc x y c
+        let color = rtx o v 1. infinity ls (ref None)  (ref (Some infinity)) in 
+        plotc x y color
     done;
 done;;
 ```

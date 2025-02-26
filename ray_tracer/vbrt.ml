@@ -20,12 +20,57 @@ type sphere =
     color : int * int * int
   };;
 
+(* type for light *)
+(* kind of light is represented by k field - *)
+(* p - for point source *)
+(* d - for directional light *)
+(* a - for ambient source *)
+type light = 
+  {
+    k : char;
+    i : float;
+    v : point option
+  }
+
+let bare (Some p) = p;;
 let sub3 p1 p2 = 
   {x = p1.x -. p2.x; y = p1.y -. p2.y; z = p1.z -. p2.z};;
+
+let add3 p1 p2 =
+  {x = p1.x +. p2.x; y = p1.y +. p2.y; z = p1.z +. p2.z};;
+
+let scale k {x;y;z} =
+  {x= k *. x;y = k *. y;z = k *. z};;
 
 let sproduct p1 p2 =
   p1.x *. p2.x +. p1.y *. p2.y +. p1.z *. p2.z;;
 
+(* norm of a vector *)
+let norm v = 
+  sqrt (sproduct v v);;
+
+(* normal of sphere at point P on the surface *)
+let n_sphere p s =
+  sub3 p s.c ;;
+
+(* total light intensity after reflection *)
+let rec til_inner normal p light_l intensity = 
+  match light_l with 
+  {k;i;v}::t -> 
+    let c_intensity = ref 0. in
+    if k = 'a' then c_intensity := i +. !c_intensity 
+    else 
+      begin
+        let l = ref {x=0.;y=0.;z=0.} in
+        (if k = 'p' then  l := (sub3 p (bare v)) else  l := bare v);
+        let nl = sproduct normal !l in 
+        (if nl > 0. then 
+          c_intensity := !c_intensity +. i *. nl /. (norm !l *. norm normal))
+      end;
+    til_inner normal p t (intensity +. !c_intensity)
+  | _ -> intensity;;
+
+let til normal p light_l = til_inner normal p light_l 0.;;
 let p1 = {x=1. ;y= 2. ;z=3. };;
 
 let p2 = {x=2. ;y= 4. ;z=6. };;
@@ -37,12 +82,21 @@ let quad a b c =
   else
     None, None;;
 
-let myrgb (x,y,z) =
-  rgb x y z;;
+(* clamping function *)
+let clamp x =
+  if x > 255. then 255
+  else if x < 0. then 0
+  else truncate x;;
 
-let sphere_color s =
-  match s with 
-  Some s -> myrgb s.color
+let myrgb (x,y,z) intensity =
+  let xi = float x *. intensity in 
+  let yi = float y *. intensity in 
+  let zi = float z *. intensity in 
+  rgb (clamp xi) (clamp yi) (clamp zi);;
+
+let sphere_color sphere intensity =
+  match sphere with 
+  Some s -> myrgb s.color intensity
   | None -> rgb 255 255 255;; (*Background color is white*)
 
 let plotc x' y' color =
@@ -70,7 +124,7 @@ let intersect_sphere o v s =
 
 (* closest_sphere initially be   ref None *)
 (* closest_t should intially be  ref (Some infinity)*)
-let rec rtx o v tmin tmax sl closest_sphere closest_t =
+let rec rtx_inner o v tmin tmax sl ll closest_sphere closest_t =
   match sl with
   s1::sr -> 
     let t1, t2 = intersect_sphere o v s1 in 
@@ -84,7 +138,16 @@ let rec rtx o v tmin tmax sl closest_sphere closest_t =
       closest_t := t2; 
       closest_sphere := Some s1
       end;
-    rtx o v tmin tmax sr closest_sphere closest_t
+    rtx_inner o v tmin tmax sr ll closest_sphere closest_t
   |[] ->  
-      sphere_color !closest_sphere;;
+    let intensity = ref 0. in 
+    (match !closest_sphere, !closest_t with 
+    Some s, Some t -> 
+      let d = sub3 v o in
+      let p = add3 o (scale t d) in 
+      let normal = sub3 p s.c in
+      intensity := til normal p ll
+      |_, _ -> ()); 
+      sphere_color !closest_sphere !intensity;;
 
+let rtx o v tmin tmax sl ll = rtx_inner o v tmin tmax sl ll (ref None) (ref (Some infinity));;
