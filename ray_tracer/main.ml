@@ -6,25 +6,29 @@ let main () =
     {
         c = {x = 0.;y= - 1.; z = 3.};
         r = 1.;
-        color = (255, 0, 0)
+        color = (255, 0, 0);
+        s = 500
     } in 
     let s2 =
     {
         c = {x = 2.; y = 0.; z = 4.};
         r = 1.;
         color = (0, 0, 255);
+        s = 500
     } in 
     let s3 =
     {
         c = {x = - 2. ; y = 0. ; z = 4.};
         r = 1.;
-        color = (0, 255, 0)
+        color = (0, 255, 0);
+        s = 50
     } in
     let s4 =
     {
         c = {x = 0.; y = - 5001.; z = 0.};
         r = 5000.;
-        color = (255, 255, 0)
+        color = (255, 255, 0);
+        s = 1000
     } in
     (* list of sphere *)
     let ls = [s1;s2;s3;s4] in 
@@ -37,13 +41,13 @@ let main () =
     let l2 =
     {
         k= 'p';
-        i = 0.5;
+        i = 0.6;
         v = Some {x =2.;y= 1.;z= 0.}
     } in 
     let l3 =
     {
         k = 'd';
-        i = 0.3;
+        i = 0.2;
         v = Some {x=1.;y= 4.;z= 4.}
     } in 
     let ll = [l1;l2;l3] in 

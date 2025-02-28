@@ -212,9 +212,11 @@ v stores
 
 Some of all intensities of light should equal to 1. Because if it didn't then some of points in scene will overexposed.
 
-Now calculate how much a point should illuminated by a point source and directional source.
+#### diffuse reflection
 
-Consider a point $P$ in the scene. $\vec{N}$ is a normal vector from $P$. $\vec{L}$ is directional vector. In case of directional light, we are already given. But in case, point light source we need to compute it from position of light source and coordinate of point $P$. $l $ denote  width of the light (proportional to intensity) and $x$ denotes length over which light spreads. $RS$ is perpendicular to $\vec{L}$ and $Q$ is point of intersection.
+Now calculate how much a point should illuminated by a point source and directional source by diffuse reflection.
+
+Consider a point $P$ in the scene. $\vec{N}$ is a normal vector from $P$. $\vec{L}$ is directional vector. In case of directional light, we are already given. But in case of point light source we need to compute it from position of light source and coordinate of point $P$. $l $ denote  width of the light (proportional to intensity) and $x$ denotes length over which light spreads. $RS$ is perpendicular to $\vec{L}$ and $Q$ is point of intersection.
 
 $\frac{l}{x}$ represent drop in the intensity after reflection of light. For example, if light is perpendicular to point $P$ of the surface, $\frac{l}{x} = 1$ . 
 
@@ -250,14 +252,69 @@ We simply add all the light's intensity which hits the point and finally multipl
 
 Mathematically,
 
-$$I_{total} = I_a + \sum I_i \frac{\langle \vec{L_i}, \vec{N}\rangle}{||\vec{L}_i||   ||\vec{N}||}$$
+$$I_{diffused} =   \sum I_i \frac{\langle \vec{L_i}, \vec{N}\rangle}{||\vec{L}_i||   ||\vec{N}||}$$
 
 where 
 
-- $I_{total}$ is the total intensity
-- $I_a$ is the intensity of ambient source
+- $I_{diffused}$ is the intensity due to diffuse reflection
 - $I_i$ is intensity of $i$ th light source which can be point source or directional light
 - $L_i$ is directional vector of light
+
+#### specular reflection
+
+To model it, we use simple fact that angle made by incident ray with normal is equal to angle made by reflected ray with normal.
+
+![intensity_of_specular](./figs/intensityspecular.png)
+
+Here
+
+- $\vec{L}$ is directional vector of light point from P to source or from point $P$ on the surface to point source light
+- $\vec{R}$ is reflected light, so makes same with $\vec{N}$ as $\vec{L}$
+- $\vec{V}$ is view vector from point $P$ on the surface to camera
+- $\vec{N}$ is the normal vector
+
+First we express $\vec{R}$ in terms of $\vec{L}$ and $\vec{N}$.
+
+We know that $\vec{L}$ can be split into two vectors - one parallel to $\vec{N}$ and another perpendicular to it.
+
+$$\vec{L_{|| \vec{N}}} = \langle \vec{L}, \hat N\rangle \hat N$$
+
+Since 
+
+$$\vec{L_{|| \vec{N}}} + \vec{L_{\perp \vec{N}}} = \vec{L}$$
+
+$$\implies \vec{L_{\perp \vec{N}}} = \vec{L} - \langle \vec{L}, \hat N\rangle \hat N$$
+
+So
+
+$$\vec{R} = \vec{L_{|| \vec{N}}} - \vec{L_{\perp \vec{N}}}$$
+
+$$\implies \vec{R} = 2 \langle \vec{L}, \hat N \rangle \hat N - \vec{L}$$
+
+Now we determine intensity due to specular reflection .
+For $\theta =0$ the reflected vector and view vector align so brightness is maximum. If $\theta = 90 \degree$ , no componenet of reflected ray is in direction of view vector, so brightness is zero in this case.
+
+For $0 \leq \theta \leq 90 \degree$ we use $\cos \theta$ to model brightness. We define $s$ to vary shininess of different objects. 
+
+Then, final expression for brightness due to specular reflection
+
+$$I_{specular} = \sum I_i (\cos \theta)^s = \sum I_i \left( \frac{\langle\vec{R_i},\vec{V_i} \rangle}{||\vec{R_i}|| ||\vec{V_i}||}\right)^s$$
+
+Note if $\theta > 90 \degree$ we might get negative total intensity whuch doesn't make sense. In those cases, we set term to zero as before.
+
+Combining both diffuse and specular brightness and ambient as well, we get
+
+$$I_{total} = I_a + \sum I_i \left[  \frac{\langle \vec{L_i}, \vec{N}\rangle}{||\vec{L}_i||   ||\vec{N}||} + \left( \frac{\langle\vec{R_i},\vec{V} \rangle}{||\vec{R_i}|| ||\vec{V}||}\right)^s \right]$$
+
+Here
+
+- $I_{total}$ is the total intensity at point
+- $I_a$ is intensity of intensity of ambient light
+- $I_i$ is the intensity of ith light which could be point source or directional 
+- $\vec{L_i}$ is incident vector of ith light
+- $\vec{R_i}$ is reflected vector of  ith light
+- $\vec{N}$ is the normal vector at a point
+- $\vec{V}$ is the view vector at a point 
 
 
 ## rendering

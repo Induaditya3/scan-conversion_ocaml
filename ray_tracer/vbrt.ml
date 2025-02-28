@@ -13,11 +13,17 @@ type point =
     z : float
   };;
 
+(* type for sphere *)
+(* r - radius *)
+(* c - center *)
+(* color - color of the sphere *)
+(* s - shininess of sphere *)
 type sphere = 
   {
     r : float;
     c : point;
-    color : int * int * int
+    color : int * int * int;
+    s : int
   };;
 
 (* type for light *)
@@ -54,7 +60,7 @@ let n_sphere p s =
   sub3 p s.c ;;
 
 (* total light intensity after reflection *)
-let rec til_inner normal p light_l intensity = 
+let rec til_inner normal p o s light_l intensity = 
   match light_l with 
   {k;i;v}::t -> 
     let c_intensity = ref 0. in
@@ -64,13 +70,19 @@ let rec til_inner normal p light_l intensity =
         let l = ref {x=0.;y=0.;z=0.} in
         (if k = 'p' then  l := (sub3 p (bare v)) else  l := bare v);
         let nl = sproduct normal !l in 
+        let unitnormal = scale (norm normal) normal in 
+        let reflected = sub3 (scale (2. *. sproduct !l unitnormal) unitnormal) !l in 
+        let view = sub3 o p in 
+        let rv = sproduct reflected view in 
+        (if rv > 0. && s > 0 then 
+          c_intensity := !c_intensity +. i *. (rv /. (norm reflected *. norm view)) ** (float s));
         (if nl > 0. then 
           c_intensity := !c_intensity +. i *. nl /. (norm !l *. norm normal))
       end;
-    til_inner normal p t (intensity +. !c_intensity)
+    til_inner normal p o s t (intensity +. !c_intensity)
   | _ -> intensity;;
 
-let til normal p light_l = til_inner normal p light_l 0.;;
+let til normal p o s light_l = til_inner normal p o s light_l 0.;;
 let p1 = {x=1. ;y= 2. ;z=3. };;
 
 let p2 = {x=2. ;y= 4. ;z=6. };;
@@ -111,7 +123,7 @@ let g_to_viewport gx gy =
   let vheight = 1. in
   let vx = (float gx *. vwidth)  /. float (size_x ()) in 
   let vy = (float gy *. vheight)  /. float (size_y ()) in 
-  let d = 0.38 in 
+  let d = 1. in 
   {x = vx;y = vy; z = d};;
 
 let intersect_sphere o v s =
@@ -146,7 +158,7 @@ let rec rtx_inner o v tmin tmax sl ll closest_sphere closest_t =
       let d = sub3 v o in
       let p = add3 o (scale t d) in 
       let normal = sub3 p s.c in
-      intensity := til normal p ll
+      intensity := til normal p o s.s ll
       |_, _ -> ()); 
       sphere_color !closest_sphere !intensity;;
 
