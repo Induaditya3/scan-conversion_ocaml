@@ -148,9 +148,9 @@ Finally
 $$at^2 + bt + c = 0 $$
 
 where 
-- $ a = \| \vec{D} \| $
+- $ a = \| \vec{D} \|^2$
 - $ b = 2 \langle \vec{D}, \vec{CO} \rangle $
-- $ c = \| \vec{CO} \| - r^2 $
+- $ c = \| \vec{CO} \|^2 - r^2 $
 
 This makes sense because ray can intersect a sphere either at 0, 1 or 2 points.
 
@@ -234,11 +234,11 @@ $$\cos \beta = \frac{l/2}{x/2} = \frac{l}{x}$$
 
 We know that
 
-$$\langle \vec{L}, \vec{N}\rangle = ||\vec{L}||   ||\vec{N}|| \cos \beta$$
+$$\langle \vec{L}, \vec{N}\rangle = \|\vec{L}\|   \|\vec{N}\| \cos \beta$$
 
 So,
 
-$$\cos \beta = \frac{\langle \vec{L}, \vec{N}\rangle}{||\vec{L}||   ||\vec{N}||}$$
+$$\cos \beta = \frac{\langle \vec{L}, \vec{N}\rangle}{\|\vec{L}\|   \|\vec{N}\|}$$
 
 If $\beta > 90 \degree$ then point is illuminated from back side of surface. In that case, we treat it as zero.
 
@@ -252,7 +252,7 @@ We simply add all the light's intensity which hits the point and finally multipl
 
 Mathematically,
 
-$$I_{diffused} =   \sum I_i \frac{\langle \vec{L_i}, \vec{N}\rangle}{||\vec{L}_i||   ||\vec{N}||}$$
+$$I_{diffused} =   \sum I_i \frac{\langle \vec{L_i}, \vec{N}\rangle}{\|\vec{L}_i\|   \|\vec{N}\|}$$
 
 where 
 
@@ -277,17 +277,17 @@ First we express $\vec{R}$ in terms of $\vec{L}$ and $\vec{N}$.
 
 We know that $\vec{L}$ can be split into two vectors - one parallel to $\vec{N}$ and another perpendicular to it.
 
-$$\vec{L_{|| \vec{N}}} = \langle \vec{L}, \hat N\rangle \hat N$$
+$$\vec{L_{\| \vec{N}}} = \langle \vec{L}, \hat N\rangle \hat N$$
 
 Since 
 
-$$\vec{L_{|| \vec{N}}} + \vec{L_{\perp \vec{N}}} = \vec{L}$$
+$$\vec{L_{\| \vec{N}}} + \vec{L_{\perp \vec{N}}} = \vec{L}$$
 
 $$\implies \vec{L_{\perp \vec{N}}} = \vec{L} - \langle \vec{L}, \hat N\rangle \hat N$$
 
 So
 
-$$\vec{R} = \vec{L_{|| \vec{N}}} - \vec{L_{\perp \vec{N}}}$$
+$$\vec{R} = \vec{L_{\| \vec{N}}} - \vec{L_{\perp \vec{N}}}$$
 
 $$\implies \vec{R} = 2 \langle \vec{L}, \hat N \rangle \hat N - \vec{L}$$
 
@@ -298,13 +298,13 @@ For $0 \leq \theta \leq 90 \degree$ we use $\cos \theta$ to model brightness. We
 
 Then, final expression for brightness due to specular reflection
 
-$$I_{specular} = \sum I_i (\cos \theta)^s = \sum I_i \left( \frac{\langle\vec{R_i},\vec{V_i} \rangle}{||\vec{R_i}|| ||\vec{V_i}||}\right)^s$$
+$$I_{specular} = \sum I_i (\cos \theta)^s = \sum I_i \left( \frac{\langle\vec{R_i},\vec{V_i} \rangle}{\|\vec{R_i}\| \|\vec{V_i}\|}\right)^s$$
 
 Note if $\theta > 90 \degree$ we might get negative total intensity whuch doesn't make sense. In those cases, we set term to zero as before.
 
 Combining both diffuse and specular brightness and ambient as well, we get
 
-$$I_{total} = I_a + \sum I_i \left[  \frac{\langle \vec{L_i}, \vec{N}\rangle}{||\vec{L}_i||   ||\vec{N}||} + \left( \frac{\langle\vec{R_i},\vec{V} \rangle}{||\vec{R_i}|| ||\vec{V}||}\right)^s \right]$$
+$$I_{total} = I_a + \sum I_i \left[  \frac{\langle \vec{L_i}, \vec{N}\rangle}{\|\vec{L}_i\|   \|\vec{N}\|} + \left( \frac{\langle\vec{R_i},\vec{V} \rangle}{\|\vec{R_i}\| \|\vec{V}\|}\right)^s \right]$$
 
 Here
 
@@ -315,6 +315,12 @@ Here
 - $\vec{R_i}$ is reflected vector of  ith light
 - $\vec{N}$ is the normal vector at a point
 - $\vec{V}$ is the view vector at a point 
+
+### casting shadows at a point
+
+Shadow is obstruction of light by one or more objects at point. 
+
+What this means for us is that we need check if particular light, like point source or directional light, ray intersects any other object in the scene before reaching the point for which are calculating illumination due to that light. If that intersection happens, then we do not include that light's intensity in calulation of of total intensity, otherwise we do.
 
 
 ## rendering
