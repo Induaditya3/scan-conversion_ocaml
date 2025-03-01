@@ -338,3 +338,22 @@ for x = -gw/2 to gw/2 do
     done;
 done;;
 ```
+```OCaml
+
+
+let specular_i o p normal l i s c_intensity =
+  let reflected = reflected_ray normal l in
+  let view = sub3 o p in 
+  let rv = sproduct reflected view in 
+  let si = ref 0. in
+  (if rv > 0. && s > 0 then 
+    si := c_intensity +. i *. (rv /. (norm reflected *. norm view))** (float s)
+    else si := c_intensity);
+    !si;;
+
+let diffuse_i normal l i c_intensity =
+  let nl = sproduct normal l in 
+  let di = ref 0. in
+  (if nl > 0. then
+    di := c_intensity +. i *. nl /. (norm l *. norm normal)else di := c_intensity);
+  !di;;

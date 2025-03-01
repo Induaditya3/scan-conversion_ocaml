@@ -3,7 +3,7 @@
 open Graphics;;
 
 open_graph "";;
-resize_window 1366 768;;
+resize_window 568 768;;
 set_window_title "ray tracer";;
 
 type point = 
@@ -105,12 +105,11 @@ let g_to_viewport gx gy =
   let vheight = 1. in
   let vx = (float gx *. vwidth)  /. float (size_x ()) in 
   let vy = (float gy *. vheight)  /. float (size_y ()) in 
-  let d = 1. in 
+  let d = 0.58 in 
   {x = vx;y = vy; z = d};;
 
 (* finding point of intersection of ray with sphere and returning parameter t *)
-let intersect_sphere o v s =
-  let d = sub3 v o in 
+let intersect_sphere o d s =
   let co = sub3 o s.c in 
   let a = sproduct d d in 
   let b = 2. *. sproduct d co in 
@@ -120,12 +119,12 @@ let intersect_sphere o v s =
 (* finding closest_sphere to the camera and parameter t of intersection with sphere with ray from camera *)
 (* closest_s should initially be None *)
 (* closest_t should intially be (Some infinity) *)
-let rec closest_sphere_inner o v tmin tmax sl closest_s closest_t =
+let rec closest_sphere_inner o d tmin tmax sl closest_s closest_t =
   let c_sphere = ref closest_s in
   let c_t = ref closest_t in
   match sl with 
   s1::sr ->
-    let t1, t2 = intersect_sphere o v s1 in 
+    let t1, t2 = intersect_sphere o d s1 in 
     if (t1 >= Some tmin && t1 <= Some tmax) && t1 <= !c_t then
       begin
         c_t := t1;
@@ -136,10 +135,33 @@ let rec closest_sphere_inner o v tmin tmax sl closest_s closest_t =
         c_t := t2;
         c_sphere := Some s1
       end;
-    closest_sphere_inner o v tmin tmax sr !c_sphere !c_t
+    closest_sphere_inner o d tmin tmax sr !c_sphere !c_t
   | _ -> closest_s, closest_t;;
 
-let closest_sphere o v tmin tmax sl = closest_sphere_inner o v tmin tmax sl None (Some infinity);;
+let closest_sphere o d tmin tmax sl = closest_sphere_inner o d tmin tmax sl None (Some infinity);;
+
+(* reflected ray *)
+let reflected_ray ncap l =
+  sub3 (scale (2. *. sproduct l ncap) ncap) l;;
+
+(* diffuse reflection *)
+let diffuse_i normal l i c_intensity =
+  let nl = sproduct normal l in 
+  let di = ref 0. in
+  (if nl > 0. then
+    di := c_intensity +. i *. nl /. (norm l *. norm normal)else di := c_intensity);
+  !di;;
+
+(* specular reflection *)
+let specular_i o p normal l i s c_intensity =
+  let reflected = reflected_ray normal l in
+  let view = sub3 o p in 
+  let rv = sproduct reflected view in 
+  let si = ref 0. in
+  (if rv > 0. && s > 0 then 
+    si := c_intensity +. i *. (rv /. (norm reflected *. norm view))** (float s)
+    else si := c_intensity);
+    !si;;
 
 (* total light intensity after reflection *)
 let rec til_inner normal p o s light_l sphere_l intensity = 
@@ -157,16 +179,13 @@ let rec til_inner normal p o s light_l sphere_l intensity =
           else  
            (l := bare v;
            tmax := infinity));
-          
-          let nl = sproduct normal !l in 
-          let unitnormal = scale (1. /.(norm normal)) normal in 
-          let reflected = sub3 (scale (2. *. sproduct !l unitnormal) unitnormal) !l in 
-          let view = sub3 o p in 
-          let rv = sproduct reflected view in 
-          (if rv > 0. && s > 0 then 
-            c_intensity := !c_intensity +. i *. (rv /. (norm reflected *. norm view)) ** (float s));
-          (if nl > 0. then 
-            c_intensity := !c_intensity +. i *. nl /. (norm !l *. norm normal))
+          let shadow_s,_ = closest_sphere p !l 0.0001 !tmax sphere_l in 
+          match shadow_s with 
+          Some ss -> ()
+          |_ -> 
+            let unitnormal = scale (1. /.(norm normal)) normal in 
+          c_intensity := specular_i o p unitnormal !l i s !c_intensity;
+          c_intensity := diffuse_i normal !l i !c_intensity
       end;
     til_inner normal p o s t sphere_l (intensity +. !c_intensity)
   | _ -> intensity;;
@@ -175,7 +194,8 @@ let til normal p o s light_l sphere_l = til_inner normal p o s light_l sphere_l 
 
 let rtx o v tmin tmax sl ll =
   let intensity = ref 0. in 
-  let s, t = closest_sphere o v tmin tmax sl in 
+  let d = sub3 v o in 
+  let s, t = closest_sphere o d tmin tmax sl in 
   begin
     match s, t with 
     Some sphere, Some t_parameter ->
