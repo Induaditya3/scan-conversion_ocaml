@@ -1,4 +1,4 @@
-# Very Basic Ray Tracer (in progress)
+# Very Basic Raytracer
 
 ## coordinate system
 
@@ -322,6 +322,25 @@ Shadow is obstruction of light by one or more objects at point.
 
 What this means for us is that we need check if particular light, like point source or directional light, ray intersects any other object in the scene before reaching the point for which are calculating illumination due to that light. If that intersection happens, then we do not include that light's intensity in calulation of of total intensity, otherwise we do.
 
+In order to do that we shoot a ray from point of interest (for which we want to know whether it is shadowed) in the direction of light source.
+
+That ray is represented as 
+
+$$P + t \vec{L} $$
+
+Here
+
+- $P$ is the point of interest
+- $\vec{L}$ is the ray of light from $P$ toward light source$
+- $t$ is the parameter. For point source, $[0^+ , 1]$ (at $t= 1$ we reach light source itself) and for directional light, $[0^+ , \infty]$. We know that a point of sphere will definitely intersect itself, so practically we take $0.0001$ instead $0^+$. (I tried `epsilon_float
+` and results were not visually apealling so to speak)
+
+Next we find closest intersection of sphere with the ray in the suitable range, if sphere exist then only ambient light illuminates that point otherwise specular and diffuse also happen.
+
+### mirror reflection at a point
+
+After a ray from a camera intersects at a point of an object, we find reflected ray at that point (color as well) and then again shoot a reflected ray and find out if intersect other object and calculate color. We can do that as many time we like (but usually after 3 we get diminishing result per computation) and eventually take weighted sum of all the colors utilising `rfl` property of spheres.
+
 
 ## rendering
 
@@ -338,22 +357,3 @@ for x = -gw/2 to gw/2 do
     done;
 done;;
 ```
-```OCaml
-
-
-let specular_i o p normal l i s c_intensity =
-  let reflected = reflected_ray normal l in
-  let view = sub3 o p in 
-  let rv = sproduct reflected view in 
-  let si = ref 0. in
-  (if rv > 0. && s > 0 then 
-    si := c_intensity +. i *. (rv /. (norm reflected *. norm view))** (float s)
-    else si := c_intensity);
-    !si;;
-
-let diffuse_i normal l i c_intensity =
-  let nl = sproduct normal l in 
-  let di = ref 0. in
-  (if nl > 0. then
-    di := c_intensity +. i *. nl /. (norm l *. norm normal)else di := c_intensity);
-  !di;;

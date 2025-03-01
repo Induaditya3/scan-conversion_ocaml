@@ -7,28 +7,32 @@ let main () =
         c = {x = 0.;y= - 1.; z = 3.};
         r = 1.;
         color = (255, 0, 0);
-        s = 500
+        s = 500;
+        rfl = 0.2
     } in 
     let s2 =
     {
-        c = {x = 2.; y = 0.; z = 4.};
+        c = {x = -2.; y = 1.; z = 3.};
         r = 1.;
         color = (0, 0, 255);
-        s = 500
+        s = 500;
+        rfl = 0.3
     } in 
     let s3 =
     {
-        c = {x = - 2. ; y = 0. ; z = 4.};
+        c = {x =  2. ; y = 1. ; z = 3.};
         r = 1.;
         color = (0, 255, 0);
-        s = 50
+        s = 50;
+        rfl = 0.4
     } in
     let s4 =
     {
         c = {x = 0.; y = - 5001.; z = 0.};
         r = 5000.;
         color = (255, 255, 0);
-        s = 1000
+        s = 1000;
+        rfl = 0.5
     } in
     (* list of sphere *)
     let ls = [s1;s2;s3;s4] in 
@@ -55,7 +59,8 @@ let main () =
     for x = -gw/2 to gw/2 do 
         for y = -gh/2 to gh/2 do 
             let v = g_to_viewport x y in
-            let color = rtx o v 1. infinity ls ll in 
+            let d = sub3 v o in
+            let color = rtx o d 1. infinity ls ll in 
             plotc x y color
         done;
     done

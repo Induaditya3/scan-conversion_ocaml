@@ -17,13 +17,15 @@ type point =
 (* r - radius *)
 (* c - center *)
 (* color - color of the sphere *)
-(* s - shininess of sphere *)
+(* s - shininess of the sphere ranges 0 on up, -ve mean not shiny*)
+(* rfl - reflectiveness of the sphere ranges from 0 to 1 *)
 type sphere = 
   {
     r : float;
     c : point;
     color : int * int * int;
-    s : int
+    s : int;
+    rfl : float
   };;
 
 (* type for light *)
@@ -86,7 +88,7 @@ let myrgb (x,y,z) intensity =
   rgb (clamp xi) (clamp yi) (clamp zi);;
 
 (* return sphere's color or background color *)
-let sphere_color sphere intensity =
+let sphere_color (sphere, intensity) =
   match sphere with 
   Some s -> myrgb s.color intensity
   | None -> rgb 255 255 255;; (*Background color is white*)
@@ -192,17 +194,28 @@ let rec til_inner normal p o s light_l sphere_l intensity =
 
 let til normal p o s light_l sphere_l = til_inner normal p o s light_l sphere_l 0.;;
 
-let rtx o v tmin tmax sl ll =
-  let intensity = ref 0. in 
-  let d = sub3 v o in 
+let extract (s,i) =
+ match s with 
+ Some sphere -> i
+ | _ -> 0.;;
+let rec rtx_inner o d tmin tmax sl ll limit =
+  let objintensity = ref 0. in 
+  let otherintensity = ref 0. in  
   let s, t = closest_sphere o d tmin tmax sl in 
   begin
     match s, t with 
     Some sphere, Some t_parameter ->
-      let d = sub3 v o in
       let p = add3 o (scale t_parameter d) in 
       let normal = sub3 p sphere.c in
-      intensity := til normal p o sphere.s ll sl
+      objintensity := til normal p o sphere.s ll sl;
+      if sphere.rfl > 0. && limit > 0 then
+        begin
+          let reflected = reflected_ray (scale (1. /. norm normal) normal) (scale (- 1.) d) in 
+          otherintensity := extract (rtx_inner p reflected 0.001 infinity sl ll (limit-1));
+          objintensity := !objintensity *. (1. -. sphere.rfl) +. sphere.rfl *. !otherintensity;
+        end
     | _, _ -> ()
   end; 
-  sphere_color s !intensity;;
+  s, !objintensity;;
+
+let rtx o d tmin tmax sl ll = sphere_color (rtx_inner o d tmin tmax sl ll 3)
