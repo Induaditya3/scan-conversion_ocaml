@@ -348,12 +348,13 @@ We iterate over every pixels of graphics window and find corresponding point on 
 
 ```OCaml
 let o = (0,0,0);; (* the origin O*)
-let gw, gh = size_x (), size_y ();; (*max width and height of graphics window *)
-for x = -gw/2 to gw/2 do 
-    for y = -gh/2 to gh/2 do 
-        let v = g_to_viewport x y in
-        let color = rtx o v 1. infinity ls (ref None)  (ref (Some infinity)) in 
-        plotc x y color
-    done;
-done;;
+let gw, gh = size_x (), size_y () in (*max width and height of graphics window *)
+    for x = -gw/2 to gw/2 do 
+        for y = -gh/2 to gh/2 do 
+            let v = g_to_viewport x y in
+            let d = sub3 v o in
+            let color = rtx o d 1. infinity ls ll in 
+            plotc x y color
+        done;
+    done;;
 ```
