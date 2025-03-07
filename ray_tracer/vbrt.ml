@@ -3,7 +3,7 @@
 open Graphics;;
 
 open_graph "";;
-resize_window 568 768;;
+resize_window 768 768;;
 set_window_title "ray tracer";;
 
 type point = 

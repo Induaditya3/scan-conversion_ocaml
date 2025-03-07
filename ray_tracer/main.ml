@@ -7,7 +7,7 @@ let main () =
         c = {x = 0.;y= - 1.; z = 3.};
         r = 1.;
         color = (255, 0, 0);
-        s = 500;
+        s = 9900;
         rfl = 0.2
     } in 
     let s2 =
@@ -15,8 +15,8 @@ let main () =
         c = {x = -2.; y = 1.; z = 3.};
         r = 1.;
         color = (0, 0, 255);
-        s = 500;
-        rfl = 0.3
+        s = 5;
+        rfl = 0.6
     } in 
     let s3 =
     {
@@ -24,7 +24,7 @@ let main () =
         r = 1.;
         color = (0, 255, 0);
         s = 50;
-        rfl = 0.4
+        rfl = 0.5
     } in
     let s4 =
     {
@@ -32,7 +32,7 @@ let main () =
         r = 5000.;
         color = (255, 255, 0);
         s = 1000;
-        rfl = 0.5
+        rfl = 0.01
     } in
     (* list of sphere *)
     let ls = [s1;s2;s3;s4] in 

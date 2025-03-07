@@ -257,8 +257,8 @@ $$I_{diffused} =   \sum I_i \frac{\langle \vec{L_i}, \vec{N}\rangle}{\|\vec{L}_i
 where 
 
 - $I_{diffused}$ is the intensity due to diffuse reflection
-- $I_i$ is intensity of $i$ th light source which can be point source or directional light
-- $L_i$ is directional vector of light
+- $I_i$ is intensity of $i^{th}$ light source which can be point source or directional light
+- $L_i$ is directional vector of $i^{th}$ th light
 
 #### specular reflection
 

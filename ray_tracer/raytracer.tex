@@ -3,7 +3,7 @@
 \usepackage{graphicx}
 \usepackage{color}
 \usepackage[colorlinks=true, linkcolor=black]{hyperref}
-\title{Very Basic Raytracer}
+\title{Very Basic Ray Tracer}
 \author{Aditya Raj}
 \date{March, 2025}
 
@@ -86,11 +86,8 @@ let g_to_viewport gx gy =
     vx, vy, d;;
 \end{verbatim}
 
-However, we know that the viewport is in 3D space, so it also has $V_z = d$ for every point on this viewport (in mathematical terms, called the \textit{projection plane}).
-
-Thus, for
-
-every pixel $(G_x, G_y)$ on the graphics window, we can calculate the corresponding $(V_x, V_y, V_z)$ of the viewport.
+However, we know that the viewport is in 3D space, so it also has $V_z = d$ for every point on this viewport (in mathematical terms, called the \textit{projection plane}). \\
+Thus, for every pixel $(G_x, G_y)$ on the graphics window, we can calculate the corresponding $(V_x, V_y, V_z)$ of the viewport.
 
 \section{Rays}
 
@@ -185,7 +182,7 @@ We use white light and assume that light has the same intensity irrespective of 
 
 \subsection{Point Lights}
 
-Point lights can becompletely described by:
+Point lights can be completely described by:
 \begin{itemize}
     \item The coordinate $Q$ of their location.
     \item The intensity of light.
@@ -283,8 +280,8 @@ Mathematically, we express this as:
 where:
 \begin{itemize}
     \item $I_{\text{diffused}}$ is the intensity due to diffuse reflection.
-    \item $I_i$ is the intensity of the $i$-th light source, which can be a point source or a directional light.
-    \item $\vec{L_i}$ is the directional vector of the light.
+    \item $I_i$ is the intensity of the $i^{th}$ light source, which can be a point source or a directional light.
+    \item $\vec{L_i}$ is the directional vector of the $i^{th}$ light.
 \end{itemize}
 
 \subsection{Specular Reflection}
@@ -309,19 +306,19 @@ First, we express $\vec{R}$ in terms of $\vec{L}$ and $\vec{N}$.
 
 We know that $\vec{L}$ can be split into two vectors: one parallel to $\vec{N}$ and another perpendicular to it.
 
-$$\vec{L_{\| \vec{N}}} = \langle \vec{L}, \hat{N} \rangle \hat{N}$$
+$$\vec{L_{\| N}} = \langle \vec{L}, \hat{N} \rangle \hat{N}$$
 
 Since 
 
-$$\vec{L_{\| \vec{N}}} + \vec{L_{\perp \vec{N}}} = \vec{L}$$
+$$\vec{L_{\| N}} + \vec{L_{\perp N}} = \vec{L}$$
 
 we have:
 
-$$\vec{L_{\perp \vec{N}}} = \vec{L} - \langle \vec{L}, \hat{N} \rangle \hat{N}$$
+$$\vec{L_{\perp N}} = \vec{L} - \langle \vec{L}, \hat{N} \rangle \hat{N}$$
 
 Thus,
 
-$$\vec{R} = \vec{L_{\| \vec{N}}} - \vec{L_{\perp \vec{N}}}$$
+$$\vec{R} = \vec{L_{\| N}} - \vec{L_{\perp N}}$$
 
 This simplifies to:
 
@@ -345,9 +342,9 @@ where:
 \begin{itemize}
     \item $I_{\text{total}}$ is the total intensity at the point.
     \item $I_a$ is the intensity of ambient light.
-    \item $I_i$ is the intensity of the $i$-th light, which could be a point source or directional light.
-    \item $\vec{L_i}$ is the incident vector of the $i$-th light.
-    \item $\vec{R_i}$ is the reflected vector of the $ i$-th light.
+    \item $I_i$ is the intensity of the $i^{th}$ light, which could be a point source or directional light.
+    \item $\vec{L_i}$ is the incident vector of the $i^{th}$ light.
+    \item $\vec{R_i}$ is the reflected vector of the $i^{th}$ light.
     \item $\vec{N}$ is the normal vector at a point.
     \item $\vec{V}$ is the view vector at a point.
 \end{itemize}
