@@ -16,7 +16,7 @@ let main () =
         r = 1.;
         color = (0, 0, 255);
         s = 5;
-        rfl = 0.6
+        rfl = 0.
     } in 
     let s3 =
     {
@@ -56,8 +56,8 @@ let main () =
     } in 
     let ll = [l1;l2;l3] in 
     let gw, gh = size_x (), size_y () in (*max width and height of graphics window *)
-    for x = -gw/2 to gw/2 do 
-        for y = -gh/2 to gh/2 do 
+    for y = - gh/2 to gh/2 do 
+        for x = - gw/2 to gw/2 do 
             let v = g_to_viewport x y in
             let d = sub3 v o in
             let color = rtx o d 1. infinity ls ll in 
