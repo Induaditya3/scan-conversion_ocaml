@@ -358,3 +358,10 @@ let gw, gh = size_x (), size_y () in (*max width and height of graphics window *
         done;
     done;;
 ```
+### Demo images
+
+![Five spheres](./figs/demo1.png)
+
+![Four sphere](./figs/demo2.png)
+
+![Five sphere on Giant sphere](./figs/demo3.png)
