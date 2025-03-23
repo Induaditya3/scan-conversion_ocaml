@@ -4,7 +4,7 @@
 
 These are used when bases are not orthogonal meaning coordinate axes not perpendicular to each other. This especially helpful when express a point's location in terms of vertices of a triangle. 
 
-### **Theorem:** *Any point $P$ in the plane of triangle $\triangle ABC$ can be uniquley expressed using three numbers $\alpha$ , $\beta$ and $\gamma$ such that $\alpha + \beta + \gamma = 1$*.
+### **Theorem:** Any point $P$ in the plane of triangle $\triangle ABC$ can be uniquley expressed using three numbers $\alpha$ , $\beta$ and $\gamma$ such that $\alpha + \beta + \gamma = 1$.
 
 ### Proof:
 
@@ -54,7 +54,7 @@ Let $k_3 = \frac{B'A}{B'C}$ , $k_4 = \frac{B'P}{BP}$ and $z_{b'}$ represents $B'
 
 Using section formula, 
 
-$$ z_{b'} = \frac{B'C a + B'A c}{B'C + B'A} = \frac{a + \frac{B'A}{B'C}}{1 + \frac{B'A}{B'C}} = \frac{a + k_3 c}{1 + k_3}$$
+$$ z_{b'} = \frac{B'C a + B'A c}{B'C + B'A} = \frac{a + \frac{B'A}{B'C}c}{1 + \frac{B'A}{B'C}} = \frac{a + k_3 c}{1 + k_3}$$
 
 Similarly,
 
@@ -88,9 +88,9 @@ $$Z_p = \frac{PB a + PA b}{PA + PB} = \frac{a + \frac{PA}{PB}b}{1 + \frac{PA}{PB
 
 Consider 
 
-- $$ \alpha = \frac{1}{1 + k} $$
-- $$ \beta = \frac{k}{1+k}$$
-- $$ \gamma = 0$$
+- $$\alpha = \frac{1}{1 + k}$$
+- $$\beta = \frac{k}{1+k}$$
+- $$\gamma = 0$$
 
 then we have 
 
