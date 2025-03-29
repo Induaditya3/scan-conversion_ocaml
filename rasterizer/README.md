@@ -97,3 +97,65 @@ then we have
 $$\alpha + \beta + \gamma = 1 $$
 
 This covers all possible cases and also the proof. $\square$
+
+## very simple line 
+
+Although there are advanced routine for drawing lines like Bresenham, we are going to use quick and dirty approach to draw line. But this function fails for vertical lines for obvious reasons (infinite slope of vertical lines).
+
+We know 
+
+$$ y = mx + c$$
+
+All symbols have their usual meaning.
+
+Since we are drawing lines in 2D plane, let us represent the end points as $A(x_0 , y_0)$ and $B(x_1, y_1)$.
+Without loss of generality, we assume $A$ 's abcissa is smaller than the $B$.
+We know that cooodinates of pixels are discrete and can take only integer values, this fact can be exploited to perform integer arithmetic mostly and floating point computation once for calculating slope.
+
+Now,
+
+$$ m = \frac{y_1 - y_0}{x_1 - x_0}$$
+
+To find $x_n$ abcissa of next point from $x_c$ current abcissa,
+
+$$x_n = x_c + 1$$
+
+Then, $y_n$ ordinate of next point in terms of $y_c$ current ordinate
+
+$$ y_n = mx_n + c = m(x_c +1) + c = mx_c + m + c = y_c + m $$
+
+$$ \because y_c = mx_c + c$$
+
+Traslating this into code
+
+```OCaml
+(* shifting origin to center of graphics window and setting color *)
+let plotc x' y' color =
+  let x,y =  x' + (size_x ()) / 2, y' + (size_y ()) / 2 in 
+  set_color color;
+  plot x y
+```
+
+```OCaml
+(* increments smaller abcissa till it reachs bigger abcissa *)
+(* to find subsequent ordinate - inital ordinate + slope *)
+let rec draw_line_inner {x = x0;y = y0} {x = x1;y = y1} slope color =
+  if x0 = x1 then ()
+  else 
+    begin
+      plotc x0 y0 color;
+      draw_line_inner {x = x0+1;y = y0+slope} {x = x1;y = y1} slope color
+    end
+
+(* wrapper function *)
+(* passes slope and interchanges points so that first point has smaller abcissa compared to second's*)
+let draw_line (x0,y0) (x1,y1) color = 
+  if x0 > x1 then 
+    draw_line_inner {x = x1;y = y1} {x = x0;y = y0} (truncate (float (y1 - y0) /. float (x1 - x0))) color
+  else
+    draw_line_inner {x = x0;y = y0} {x = x1;y = y1} (truncate (float (y1 - y0) /. float (x1 - x0))) color
+```
+### Comparision
+![comparision](./figs/linescmp.png)
+
+Clearly, there are gaps between consective points on the line. These gaps gets bigger as the line gets steeper.
