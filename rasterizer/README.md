@@ -159,3 +159,12 @@ let draw_line (x0,y0) (x1,y1) color =
 ![comparision](./figs/linescmp.png)
 
 Clearly, there are gaps between consective points on the line. These gaps gets bigger as the line gets steeper.
+One of the reasons that it does that is because sometimes we need more $y$ values for corespponding $x$ value. Extreme example of this is vertical line - we need lots of $y$ values corresponding to single $x$ values.
+
+## linear interpolation
+
+We are given two ordered pairs (i.e. 2D points) where one element of each pair is independent and the other one is dependent on it and we have to generate more ordered pairs such that joining them makes a straight line.
+
+We will use the same idea as used previously in drawing line, instead of $x$'s and $y$'s we have $i$'s and $d$'s (which symbolically denotes indpendent and dependent variable respectively).
+
+
