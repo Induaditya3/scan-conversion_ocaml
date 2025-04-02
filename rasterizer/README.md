@@ -165,6 +165,72 @@ One of the reasons that it does that is because sometimes we need more $y$ value
 
 We are given two ordered pairs (i.e. 2D points) where one element of each pair is independent and the other one is dependent on it and we have to generate more ordered pairs such that joining them makes a straight line.
 
-We will use the same idea as used previously in drawing line, instead of $x$'s and $y$'s we have $i$'s and $d$'s (which symbolically denotes indpendent and dependent variable respectively).
+We will use the same idea as used previously in drawing line, instead of $x$'s and $y$'s we have $i$'s and $d$'s (which symbolically denotes indpendent and dependent variable respectively) and instead of drawing immediately we will instead store it in a list and finally return it.
 
+Implementation looks like this:
+
+```OCaml
+(* to generate a list of dependents d corresponding to independents i between i0 and i1 *)
+(* m is the slope *)
+(* ld is the list of dependents *)
+let rec interpolate_inner i0 d i1 m ld =
+  if i0 = i1 then ld else interpolate_inner (i0 +. 1.) (d+.m)  i1 m ((d+.m) :: ld)
+
+(* wrapper function *)
+let interpolate i0 d0 i1 d1 = 
+  if i0 > i1 then [d0]
+    else 
+      (  let m = (d1 -. d0) /. (i1 -. i0) in
+      interpolate_inner i0 d0 i1 m [] )
+```
+
+## line
+
+We use same algorithm as before but employ interpolate function to treat $x$ and $y$ as dependent or independent based on slope $m$.
+
+If $ | m | > 1$ then $y + m$ will be farther apart than previous ordinate $y$ which will result in gap while drawing. In this case we treat $x$ as dependent and $y$ as independent.
+
+If $|m| < 1$ then we follow usual approach as used in [previous line drawing algorithm](#very-simple-line).
+
+```OCaml
+(* helper function for plotting points of list based on whether x is independent or y  *)
+let rec draw_inner i0 ld color w =
+  match ld, w with 
+  h::t , 'x'-> plotc i0 h color; draw_inner (i0-.1.)  t color w
+  | h::t , 'y'-> plotc h i0 color; draw_inner (i0-.1.)  t color w
+  | _ -> ()
+
+let draw_line {x=x0;y=y0} {x=x1;y=y1} color =
+  if abs_float (x1 -. x0) > abs_float (y1 -. y0) then
+    (* line makes angle of less than 45 with horizontal axis *)
+    begin
+      if x0 < x1 then 
+        (let ly = interpolate x0 y0 x1 y1 in 
+        draw_inner x1 ly color 'x')
+      else
+        (let ly = interpolate x1 y1 x0 y0 in 
+        draw_inner x0 ly color 'x')
+    end
+  else
+    (* line makes angle of 45 or more with horizontal axis *)
+    begin
+      if y0 < y1 then 
+        (let lx = interpolate y0 x0 y1 x1 in 
+        draw_inner y1 lx color 'y')
+      else
+        (let lx = interpolate y1 x1 y0 x0 in 
+        draw_inner y0 lx color 'y')
+    end
+```
+## filled triangle
+
+We use the same basic idea as in [scan-line algorithm](./../README.md) but the code organization is different. One of the major difference is that we calculate end points of horizontal line that needs to be drawn in one go using `interpolate`, instead of calulating them on the fly.
+
+Here's outline of algorithm:
+
+1. Sort the three points based on the ordinates in ascending order.
+2. Calculate abcissas of of longest side using interpolate.
+3. Also do same for other two sides. Delete common abcissa and merge the list.
+4. Find the which list contains abcissas on left side. 
+5. Iterate through lowest ordinate to highest ordinate and draw horizontal line from left side abcissa to right side abcissa.
 
